@@ -1,0 +1,85 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 09/02/2022 17:20:05
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : ASM Project 1
+00000000                             3  * Written by : Liam Durkan
+00000000                             4  * Date       : 9/2/22
+00000000                             5  * Description: Write a test based game to save the worlds climate crisis
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000  21FC 004C4B40 2000        10      MOVE.L  #5000000, $2000     #CARBON PARTS
+00001008                            11      
+00001008  21FC 000186A0 6000        12      MOVE.L #100000, $6000   #BUDGET
+00001010                            13     
+00001010  21FC 00000005 3000        14      MOVE.L #5, $3000    #QUANTITY OF WINDMILLS
+00001018  21FC 0000002D 4000        15      MOVE.L  #45, $4000 #CARBON REDUCTION OF WINDMILLS
+00001020  21FC 00003A98 5000        16      MOVE.L #15000, $5000 #COST OF WINDMILLS
+00001028                            17  
+00001028  21FC 0000000A 3010        18      MOVE.L #10, $3010   #QUANTITY OF SOLAR PANELS
+00001030  21FC 00000016 4010        19      MOVE.L #22, $4010   #CARBON REDUCTION OF SOLAR PANELS
+00001038  21FC 000009C4 5010        20      MOVE.L #2500, $5010 #COST OF SOLAR PANELS
+00001040                            21  
+00001040  21FC 000003E8 3020        22      MOVE.L #1000, $3020 #QUANTITY OF TREES
+00001048  21FC 00000006 4020        23      MOVE.L #6, $4020 #CARBON REDUCTION OF TREES
+00001050  21FC 00000032 5020        24      MOVE.L #50, $5020 #COST OF TREES
+00001058                            25      
+00001058                            26  
+00001058                            27  GAME_LOOP:
+00001058                            28  
+00001058  2438 2000                 29      MOVE.L  $2000, D2   #CARBON PARTS
+0000105C  2638 3000                 30      MOVE.L $3000, D3    #QUANTITY OF WINDMILLS  
+00001060  2838 4000                 31      MOVE.L  $4000, D4   #CARBON REDUCTION OF WINDMILLS
+00001064                            32      
+00001064  C8C3                      33      MULU    D3, D4 #CARBON REDUCTION FOR WINDMILLS
+00001066  9444                      34      SUB D4, D2  #REDUCTION OF CARBON IN AIR
+00001068                            35    
+00001068                            36      
+00001068                            37     
+00001068  2638 3010                 38      MOVE.L $3010, D3    #QUANTITY OF SOLAR PANELS 
+0000106C  2838 4010                 39      MOVE.L  $4010, D4   #CARBON REDUCTION OF SOLAR PANELS
+00001070                            40      
+00001070  C8C3                      41      MULU    D3, D4 #CARBON REDUCTION FOR SOLAR PANELS
+00001072  9444                      42      SUB D4, D2  #REDUCTION OF CARBON IN AIR
+00001074                            43      
+00001074                            44      
+00001074                            45      
+00001074  2638 3020                 46      MOVE.L $3020, D3    #QUANTITY OF TREES
+00001078  2838 4020                 47      MOVE.L  $4020, D4   #CARBON REDUCTION OF TREES
+0000107C                            48      
+0000107C  C8C3                      49      MULU    D3, D4 #CARBON REDUCTION FOR TREES
+0000107E  9444                      50      SUB D4, D2  #REDUCTION OF CARBON IN AIR
+00001080                            51      
+00001080  21C2 2000                 52      MOVE.L D2, $2000 #STORE NEW CARBON VALUE AFTER SUB WINDMILLS, SOLAR AND TREES REDUCTION
+00001084                            53  
+00001084  B47C 0000                 54      CMP #0, D2
+00001088  66CE                      55      BNE GAME_LOOP
+0000108A  6000 0002                 56      BRA SAVED_THE_WORLD
+0000108E                            57      
+0000108E                            58      SAVED_THE_WORLD:
+0000108E  43F9 000010A2             59          LEA MESSAGE,  A1  #DISPLAY SAVED THE WORLD
+00001094  103C 000E                 60          MOVE.B #14, D0
+00001098  4E4F                      61          TRAP #15
+0000109A  6000 0002                 62          BRA END
+0000109E                            63          
+0000109E                            64  END:
+0000109E  FFFF FFFF                 65      SIMHALT
+000010A2= 59 4F 55 20 48 41 ...     66  MESSAGE DC.B 'YOU HAVE SAVED THE WORLD' , 0
+000010BB                            67  
+000010BB                            68      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+END                 109E
+GAME_LOOP           1058
+MESSAGE             10A2
+SAVED_THE_WORLD     108E
+START               1000
