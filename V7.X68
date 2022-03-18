@@ -9,6 +9,9 @@ START:                  ; first instruction of program
 
     BRA WELCOME
     
+    MOVE.L  #5148, $2000     #CARBON PARTS
+   
+    
   
 
     SIMHALT             ; halt simulator
@@ -62,12 +65,22 @@ QUEST_LVL:
 LVL_1:
     BSR CLEAR_SCREEN
     
-    LEA     LVL1_WELCOME,A1  ASSIGN MESSAGE TO ADDRESS REGISTER A1
-    MOVE.B  #14,D0          MOVE LITERAL 14 TO DO
+    LEA     LVL1_1,A1  ASSIGN MESSAGE TO ADDRESS REGISTER A1
+    MOVE.B  #14,D0     MOVE LITERAL 14 TO DO
     TRAP    #15
-  
     
- 
+    MOVE #4, D1
+    TRAP #15
+    
+    CMP #1, D1
+    BEQ CONTINUE_LVL1
+    
+    CMP #2, D1
+    BEQ CHICKEN_OUT
+    
+    BRA LVL_1
+
+CONTINUE_LVL1:
 
 *-------------------------------------------------------
 *-------------------QUEST LVL 2-------------------------
@@ -83,6 +96,10 @@ LVL_3:
 *-------------------------------------------------------
 *-------------------MISC SUBROUTINES--------------------
 *-------------------------------------------------------
+CHICKEN_OUT:
+    LEA CHICKEN,A1
+    MOVE.B  #14,D0          
+    TRAP    #15   
 ENDL:
     MOVEM.L D0/A1,-(A7)
     MOVE    #14,D0
@@ -96,7 +113,7 @@ CLEAR_SCREEN:
     TRAP    #15
     RTS
 *-------------------------------------------------------
-*-------------------DATA DELARATIONS--------------------
+*-------------------STORYLINE---------------------------
 *-------------------------------------------------------
 
 CRLF:           DC.B    $0D,$0A,0
@@ -112,15 +129,20 @@ WELCOME_MSG:    DC.B    '*******************************************************
                 DC.B    'TO RETURN TO GAME: ',0
                 
                 
-LVL1_WELCOME DC.B 'Finnally youve arrived. We have has been waiting on you!'
+LVL1_1       DC.B    'FINALLY YOU HAVE ARRIVED, WE HAVE BEEN WAITING ON YOU...'
              DC.B    $0D,$0A
-             DC.B    'I dont have much time to explain so your gonna have to be quick.'
+             DC.B    'OOVER THE PAST DECADE A STEADY INCREASE IN TEMPERATURE HAS BEEN RECORDED,'
              DC.B    $0D,$0A
-             DC.B    'Over the past decade a noticable increase in temperature has been recorded,'
+             DC.B    'LAST YEAR WE NOTICED A RISE IN SEA LEVELS'
              DC.B    $0D,$0A
-             DC.B    'Last year the temperature dramatically rose and we need your help to reduce it ',0
-
-
+             DC.B    'OUR CITY IS IN GRAVE DANGER OF BEING SUBMERGED AND WITHOUTH YOUR HELP WE WILL LOSE EVERYTHING'        
+             DC.B    $0D,$0A
+             DC.B    $0D,$0A
+             DC.B    'YOU ARE OUR LAST HOPE WE NEED YOUR HELP!'             
+             DC.B    $0D,$0A
+             DC.B    'PRESS (1) TO HELP SAVE THE CITY OR (2) TO CHICKEN OUT. ',0
+             
+CHICKEN:     DC.B 'DIDNT EXPECT THAT, DAFE TO SAY IM EMBARRASED FOR YOU',0
 
     END    START        ; last line of source
 
