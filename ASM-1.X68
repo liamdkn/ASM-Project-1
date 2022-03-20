@@ -28,8 +28,9 @@ START:                  ; first instruction of program
 
 
 
-
+    BSR DATA_DISPLAY
     BSR MENU
+    BSR DATA_DISPLAY
     
     LEA TEST,A1
     MOVE.B #14, D0
@@ -214,16 +215,53 @@ PURCHASE_WINDMILLS:
     
     RTS #RETURN FROM SUBROUTINE(BRINGS TO START)
 
-ERROR:
-    BSR CLEAR_SCREEN
-    LEA ERROR1, A1
+DATA_DISPLAY:
+    LEA DD1, A1 #PRINT TITLE BOX
     BSR PRINT
-    BSR MENU
+    
+    LEA DD2,A1 #MOVE MESSAGE TO A1
+    BSR PRINT
+    MOVE #3,D0 #PRINT COINS REMAINING
+    MOVE.L $6000,D1
+    TRAP #15
+    
+    LEA DD3,A1 #MOVE MESSAGE TO A1
+    BSR PRINT
+    MOVE #3,D0 #PRINT CARBON LEVELS
+    MOVE.L $2000,D1
+    TRAP #15
+   
+    LEA DD4,A1 #MOVE MESSAGE TO A1
+    BSR PRINT
+    MOVE #3,D0 #PRINT QUANTITY OF TREES
+    MOVE.L $3020,D1
+    TRAP #15
+    
+    LEA DD5,A1 #MOVE MESSAGE TO A1
+    BSR PRINT
+    MOVE #3,D0 #PRINT QUANTITY OF SOLAR PANELS 
+    MOVE.L $3010,D1
+    TRAP #15
+    
+    LEA DD6,A1 #MOVE MESSAGE TO A1
+    BSR PRINT
+    MOVE #3,D0 #PRINT QUANTITY OF WINDMILLS 
+    MOVE.L $3000,D1
+    TRAP #15
+    
+    LEA DD7,A1 #MOVE MESSAGE TO A1
+    BSR PRINT
+    
+    
+    RTS #RETURN FROM SUBROUTINE
     
     
     SIMHALT             ; halt simulator
 
 * Put variables and constants here
+*--------------------------------------------------
+*----------------SUBROUTINES-----------------------
+*--------------------------------------------------
 PRINT:
     DC.B $0D,$0A,0
     MOVE.B #14, D0
@@ -241,7 +279,41 @@ CLEAR_SCREEN:
     TRAP #15
     RTS
     
-    
+ERROR:
+    BSR CLEAR_SCREEN
+    LEA ERROR1, A1
+    BSR PRINT
+    BSR MENU
+ 
+*-----------------------------------------------
+*------------DATA DISPLAY-----------------------
+*-----------------------------------------------
+
+DD1 DC.B $0D,$0A
+    DC.B '--------------------------------------'
+    DC.B $0D,$0A
+    DC.B '----------------INFO------------------'
+    DC.B $0D,$0A
+    DC.B '--------------------------------------'
+    DC.B $0D,$0A,0
+DD2 DC.B '-COINS REMAINING: ',0
+DD3 DC.B $0D,$0A
+    DC.B '-CARBON LEVELS /PPM: ',0
+DD4 DC.B $0D,$0A
+    DC.B '-QUANTITY OF TREES: ',0
+DD5 DC.B $0D,$0A
+    DC.B '-QUANTITY OF SOLAR PANELS: ',0
+DD6 DC.B $0D,$0A
+    DC.B '-QUANTITY OF WINDMILLS: ',0
+DD7 DC.B $0D,$0A
+    DC.B '--------------------------------------'
+    DC.B $0D,$0A
+    DC.B $0D,$0A,0
+ 
+*-----------------------------------------------------------------------------
+*--------------------------PRINT TO SCREEN------------------------------------
+*-----------------------------------------------------------------------------
+
 CHOICE DC.B 'DO YOU WANT TO PURCHASE (1)TREES, (2)SOLAR OR (3) WINDMILLS? ',0
 
 BUYTREE DC.B 'HOW MANY TREES WOULD YOU LIKE TO PURCHASE? ',0
