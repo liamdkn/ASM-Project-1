@@ -8,14 +8,14 @@
 START:                  ; first instruction of program
 * Put program code here
     
-    MOVE.L #5000, $2000 #CARBON PARTS IN AIR 
+    MOVE.L #1000, $2000 #CARBON PARTS IN AIR 
     MOVE.L #1000, $6000   #BUDGET
     
-    MOVE.L #5, $3000    #QUANTITY OF WINDMILLS
+    MOVE.L #0, $3000    #QUANTITY OF WINDMILLS
     MOVE.L  #50, $4000 #CARBON REDUCTION OF WINDMILLS
     MOVE.L #100, $5000 #COST OF WINDMILLS
     
-    MOVE.L #10, $3010   #QUANTITY OF SOLAR PANELS
+    MOVE.L #0, $3010   #QUANTITY OF SOLAR PANELS
     MOVE.L #25, $4010   #CARBON REDUCTION OF SOLAR PANELS
     MOVE.L #50, $5010 #COST OF SOLAR PANELS
     
@@ -27,6 +27,7 @@ START:                  ; first instruction of program
     BSR INTRO
     
 GAME: 
+    BSR GAME_LOOP 
     BSR DATA_DISPLAY
     BSR MENU
     BSR GAME_LOOP 
@@ -35,7 +36,8 @@ INTRO:
     LEA INTRO1,A1
     BSR PRINT
     
-    BSR STORE 
+    MOVE #4, D0
+    TRAP #15
     
     CMP #1, D1 
     BEQ PLAY
@@ -53,7 +55,8 @@ PLAY:
     LEA PLAY2,A1
     BSR PRINT
     
-    BSR STORE
+    MOVE #4, D0  
+    TRAP #15
     
     CMP #1,D1
     BEQ GAME
@@ -64,7 +67,8 @@ MENU:
     LEA CHOICE,A1                   #LOAD EFFECTIVE ADDRESS AND STORE IN A1
     BSR PRINT                       #BRANCH TO PRINT SUBROUTINE, STORE IN D0
     
-    BSR STORE                       #STORE INPUT IN D1
+    MOVE #4, D0 
+    TRAP #15                       #STORE INPUT IN D1
     
     CMP #1, D1                      #COMPARE VALUE IN D1 WITH INTEGER 1 
     BEQ PURCHASE_TREES              #BRANCH IF D1 IS EXACTLY EQUAL WITH 1
@@ -132,7 +136,8 @@ PURCHASE_TREES:
     
     LEA CON,A1
     BSR PRINT
-    BSR STORE
+    MOVE #4, D0 
+    TRAP #15
     CMP #1,D1
     BEQ GAME
     ;RTS                             #RETURN FROM SUBROUTINE(BRINGS TO START)
@@ -188,7 +193,8 @@ PURCHASE_SOLAR:
     
     LEA CON,A1
     BSR PRINT
-    BSR STORE
+    MOVE #4, D0 
+    TRAP #15
     CMP #1,D1
     BEQ GAME
     ;RTS #RETURN FROM SUBROUTINE(BRINGS TO START)
@@ -245,9 +251,12 @@ PURCHASE_WINDMILLS:
     
     LEA CON,A1
     BSR PRINT
-    BSR STORE
+     MOVE #4, D0 
+    TRAP #15
     CMP #1,D1
     BEQ GAME
+    
+    BSR ERROR
     ;RTS #RETURN FROM SUBROUTINE(BRINGS TO START)
     
 GAME_LOOP:
@@ -319,12 +328,13 @@ DATA_DISPLAY:
     
     RTS #RETURN FROM SUBROUTINE
     
-GAME_WIN
+GAME_WIN:
     BSR CLEAR_SCREEN
     LEA WIN1, A1
     BSR PRINT
+    BSR END
     
-CHICKEN_OUT
+CHICKEN_OUT:
     BSR CLEAR_SCREEN
     LEA CHICKEN1, A1
     BSR PRINT
@@ -343,10 +353,6 @@ PRINT:
     TRAP #15
     RTS
     
-STORE:
-    MOVE #4, D0
-    TRAP #15
-    RTS
     
 CLEAR_SCREEN:
     MOVE.B #11, D0
@@ -473,6 +479,7 @@ END:
 *~Tab type~1~
 *~Tab size~4~
 © 2022 GitHub, Inc.
+
 
 *~Font name~Courier New~
 *~Font size~10~
