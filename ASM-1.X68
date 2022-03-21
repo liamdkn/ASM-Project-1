@@ -24,92 +24,121 @@ START:                  ; first instruction of program
     MOVE.L #10, $5020 #COST OF TREES
 
 
-
-
-
-
+    BSR INTRO
+    
+GAME: 
     BSR DATA_DISPLAY
     BSR MENU
-    BSR GAME_LOOP
+    BSR GAME_LOOP 
     BSR DATA_DISPLAY
     BSR MENU
-    BSR GAME_LOOP
-    
+    BSR GAME_LOOP 
+    BSR DATA_DISPLAY
+    BSR MENU
+    BSR GAME_LOOP 
+    BSR END
 
     
-    
- 
-    
-MENU:
-    LEA CHOICE,A1
+INTRO:
+    LEA INTRO1,A1
     BSR PRINT
     
-    BSR STORE #STORE CHOICE IN D1
+    BSR STORE 
     
-    CMP #1, D1
-    BEQ PURCHASE_TREES
+    CMP #1, D1 
+    BEQ PLAY
     
-    CMP #2, D1
-    BEQ PURCHASE_SOLAR
+    CMP #0, D1
+    BEQ CHICKEN_OUT
     
-    CMP #3, D1
-    BEQ  PURCHASE_WINDMILLS
-    BGT ERROR
+    BSR ERROR2
     
+PLAY:
+    BSR CLEAR_SCREEN
+    LEA PLAY1,A1
+    BSR PRINT
     
+    LEA PLAY2,A1
+    BSR PRINT
     
+    BSR STORE
     
+    CMP #1,D1
+    BEQ GAME
+    
+    BSR ERROR
+
+MENU:
+    LEA CHOICE,A1                   #LOAD EFFECTIVE ADDRESS AND STORE IN A1
+    BSR PRINT                       #BRANCH TO PRINT SUBROUTINE, STORE IN D0
+    
+    BSR STORE                       #STORE INPUT IN D1
+    
+    CMP #1, D1                      #COMPARE VALUE IN D1 WITH INTEGER 1 
+    BEQ PURCHASE_TREES              #BRANCH IF D1 IS EXACTLY EQUAL WITH 1
+    
+    CMP #2, D1                      #COMPARE D1 WITH 2
+    BEQ PURCHASE_SOLAR              #BRANCH IF D1 IS EXACTLY EQUAL WITH 2
+    
+    CMP #3, D1                      #COMPARE D1 WITH 3
+    BEQ  PURCHASE_WINDMILLS         # BRANCH IF D1 IS EXACTLY EQUAL WITH 3
+    
+    BGT ERROR                       #BRANCH TO ERROR SUBROUTINE(NO MATCHING NUMBERS)
+    
+    RTS
+    
+
     
 PURCHASE_TREES:
-    BSR CLEAR_SCREEN
+    BSR CLEAR_SCREEN                #BRANCH TO CLEAR SCREEN ROUTINE
     
-    LEA BUYTREE, A1
-    BSR PRINT
+    LEA BUYTREE, A1                 #ASK USER HOW MANY TREES WOULD THEY LIKE TO BUY
+    BSR PRINT                       #CALL PRINT SUBROUTINE 
     
-    MOVE #4, D0 #STORE HOW MANY TREES TO BUY
+    MOVE #4, D0                     #STORE HOW MANY TREES TO BUY
     TRAP #15
-    MOVE.L D1, D4 #STORE NUMBER OF TREES BOUGHT FOR LATER
+    MOVE.L D1, D4                   #STORE NUMBER OF TREES BOUGHT FOR LATER
     
-    MOVE.L $3020, D2 #MOVE CURRENT TREES TOTAL TO D2
+    MOVE.L $3020, D2                #MOVE CURRENT TREES TOTAL TO D2
     ADD D2, D1 
     MOVE.L D1, $3020
     
-    LEA BUYTREE2,A1 #TOTAL OF TREES ALREADY
+    LEA BUYTREE2,A1                 #TOTAL OF TREES ALREADY
     BSR PRINT
    
-    MOVE #3, D0 #MOVE TREE TOTAL FROM REGISTER TO MEMORY
-    MOVE.L $3020, D1 #PRINT TOTAL TREES
+    MOVE #3, D0                     #MOVE TREE TOTAL FROM REGISTER TO MEMORY
+    MOVE.L $3020, D1                #PRINT TOTAL TREES
     TRAP #15
     
-    LEA BUYTREE3,A1 #CLOSING LINE
+    LEA BUYTREE3,A1                 #CLOSING STATMENT FOR TREES PURCHASED
     BSR PRINT
     
-    MOVE.L $5020, D3 #MOVE COST OF TREES TO D3
-    MULU D3, D4 #CALCULATE COST OF BUYING NEW TREES
+    MOVE.L $5020, D3                #MOVE COST OF TREES TO D3
+    MULU D3, D4                     #CALCULATE COST OF BUYING NEW TREES
     
-    MOVE.L $6000, D3 #MOVE CURRENCY TO D4
-    SUB D4, D3 #SUBTRACT PURCHASE OF TREES FROM MONEY
+    MOVE.L $6000, D3                #MOVE CURRENCY TO D4
+    SUB D4, D3                      #SUBTRACT PURCHASE OF TREES FROM MONEY
     
-    MOVE.L D3, $6000 #STORE NEW MONEY VALUE IN MEMORY 
+    MOVE.L D3, $6000                #STORE NEW MONEY VALUE IN MEMORY 
     
-    LEA COINREM1,A1 #YOU HAVE SPENT
+    LEA COINREM1,A1                 #YOU HAVE SPENT STRING
     BSR PRINT
     
-    MOVE #3,D0 #PRINT COINS SPENT
-    MOVE.L D4,D1
-    TRAP #15
+    MOVE #3,D0                      #PREPARE TO PRINT AN INTEGER
+    MOVE.L D4,D1                    #MOVE D4 TO D1 
+    TRAP #15                        #PRINT TO SCREEN 
     
-    LEA COINREM2,A1 
-    BSR PRINT
+    LEA COINREM2,A1                 #REST OF SPENT STRING
+    BSR PRINT                       #BRANCH TO PRINT STATMENT 
     
-    MOVE #3,D0 #PRINT COINS REMAINING
+    MOVE #3,D0                      #PRINT COINS REMAINING
     MOVE.L D3,D1
     TRAP #15
     
-    LEA COINREM3,A1 #CLOSING SENTENCE
+    LEA COINREM3,A1                 #CLOSING SENTENCE
     BSR PRINT
     
-    RTS #RETURN FROM SUBROUTINE(BRINGS TO START)
+    RTS                             #RETURN FROM SUBROUTINE(BRINGS TO START)
     
 PURCHASE_SOLAR:
     BSR CLEAR_SCREEN
@@ -223,15 +252,11 @@ GAME_LOOP:
     MULU    D3, D4 #CARBON REDUCTION FOR WINDMILLS
     SUB D4, D2  #REDUCTION OF CARBON IN AIR
   
-    
-   
     MOVE.L $3010, D3    #QUANTITY OF SOLAR PANELS 
     MOVE.L  $4010, D4   #CARBON REDUCTION OF SOLAR PANELS
     
     MULU    D3, D4 #CARBON REDUCTION FOR SOLAR PANELS
     SUB D4, D2  #REDUCTION OF CARBON IN AIR
-    
-    
     
     MOVE.L $3020, D3    #QUANTITY OF TREES
     MOVE.L  $4020, D4   #CARBON REDUCTION OF TREES
@@ -292,6 +317,12 @@ GAME_WIN
     LEA WIN1, A1
     BSR PRINT
     
+CHICKEN_OUT
+    BSR CLEAR_SCREEN
+    LEA CHICKEN1, A1
+    BSR PRINT
+    
+    
     
     SIMHALT             ; halt simulator
 
@@ -321,6 +352,11 @@ ERROR:
     LEA ERROR1, A1
     BSR PRINT
     BSR MENU
+ERROR2:
+    BSR CLEAR_SCREEN
+    LEA ERROR1, A1
+    BSR PRINT
+    BSR INTRO
  
 *-----------------------------------------------
 *------------DATA DISPLAY-----------------------
@@ -350,6 +386,23 @@ DD7 DC.B $0D,$0A
 *-----------------------------------------------------------------------------
 *--------------------------PRINT TO SCREEN------------------------------------
 *-----------------------------------------------------------------------------
+INTRO1  DC.B '---WELCOME TO THIS TEXT BASED ADVENTURE GAME---'
+        DC.B $0D,$0A
+        DC.B $0D,$0A
+        DC.B 'LET ME GIVE YOU THE RUN DOWN OF HOW TO PLAY,'
+        DC.B $0D, $0A
+        DC.B $0D, $0A
+        DC.B 'LAST YEAR WE NOTICED A SIGNIFICANT INCREASE IN GLOBAL TEMPERATURE,'
+        DC.B $0D,$0A
+        DC.B 'THIS HAS CAUSED ICE IN THE SEA TO MELT'
+        DC.B $0D,$0A
+        DC.B 'AND NOW OUR CITY IS IN DANGER OF BEING SUBMERGED'
+        DC.B $0D,$0A
+        DC.B $0D,$0A
+        DC.B 'DO YOU THINK YOUR UP TO THE TASK OF SAVING OUR CITY?'
+        DC.B $0D,$0A        
+        DC.B 'PRESS (1) TO PLAY OR (0) TO CHICKEN OUT ',0
+      
 
 CHOICE DC.B 'DO YOU WANT TO PURCHASE (1)TREES, (2)SOLAR OR (3) WINDMILLS? ',0
 
@@ -372,14 +425,44 @@ COINREM3 DC.B ' COINS REMAINING',0
 
 WIN1  DC.B $0D,$0A
       DC.B 'CONGRATS',0
+      
+CHICKEN1 DC.B 'WOW, JUST LIKE THAT YOU CHICKENED OUT'
+         DC.B $0D,$0A
+         DC.B 'HOPE YOU CAN SWIM!',0
+         
+PLAY1    DC.B 'GLAD TO SEE YOUR UP TO THE TASK OF SAVING THE WORLD!'
+         DC.B $0D,$0A
+         DC.B $0D,$0A
+         DC.B 'YOUR MISSION IS TO REDUCE THE CARBON LEVELS IN THE AIR'
+         DC.B $0D,$0A
+         DC.B 'YOU HAVE 1000 COINS IN THE BANK'
+         DC.B $0D,$0A
+         DC.B 'YOU CAN BUY TREES, SOLAR PANELS AND WINDMILLS WITH THIS.'
+         DC.B $0D,$0A
+         DC.B $0D,$0A
+         DC.B 'TREES COST 10 COINS AND REDUCE CARBON BY 5/PPM EVERY DAY'         
+         DC.B $0D,$0A
+         DC.B 'SOLAR PANELS COST 50 COINS AND REDUCE CARBON BY 25/PPM EVERY DAY'
+         DC.B $0D,$0A
+         DC.B 'WINDMILLS COST 100 COINS AND REDUCE CARBON BY 50/PPM EVERY DAY',0
+PLAY2    DC.B $0D,$0A
+         DC.B $0D,$0A
+         DC.B 'PRESS (1) TO START',0
+
 
 ERROR1  DC.B 'ERROR: INCORRECT NUMBER, PLEASE TRY AGAIN'
         DC.B $0D,$0A,0
+        DC.B $0D,$0A,0
         
-
+END:
     END    START        ; last line of source
 
 
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~
+© 2022 GitHub, Inc.
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
