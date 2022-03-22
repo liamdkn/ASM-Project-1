@@ -8,7 +8,7 @@
 START:                  ; first instruction of program
 * Put program code here
     
-    MOVE.L #1000, $2000 #CARBON PARTS IN AIR 
+    MOVE.L #800, $2000 #CARBON PARTS IN AIR 
     MOVE.L #1000, $6000   #BUDGET
     
     MOVE.L #0, $3000    #QUANTITY OF WINDMILLS
@@ -28,9 +28,14 @@ START:                  ; first instruction of program
     
 GAME: 
     BSR GAME_LOOP 
+    
+    MOVE.L $6000, D3 #MOVE BUDGET TO D3
+    CMP #10, D3
+    BLT BROKE
+    
     BSR DATA_DISPLAY
     BSR MENU
-    BSR GAME_LOOP 
+    
     
 INTRO:
     LEA INTRO1,A1
@@ -281,6 +286,8 @@ GAME_LOOP:
     SUB D4, D2  #REDUCTION OF CARBON IN AIR
     
     MOVE.L D2, $2000 #STORE NEW CARBON VALUE AFTER SUB WINDMILLS, SOLAR AND TREES REDUCTION
+    
+
 
     CMP #50, D2
     BLT GAME_WIN
@@ -338,6 +345,12 @@ CHICKEN_OUT:
     BSR CLEAR_SCREEN
     LEA CHICKEN1, A1
     BSR PRINT
+    
+BROKE:
+    BSR CLEAR_SCREEN
+    LEA B1,A1
+    BSR PRINT
+    
     
     
     
@@ -437,7 +450,7 @@ COINREM2 DC.B ' COINS, AND HAVE ',0
 COINREM3 DC.B ' COINS REMAINING',0
 
 WIN1  DC.B $0D,$0A
-      DC.B 'CONGRATS',0
+      DC.B 'CONGRATS, THE CARBON LEVELS ARE NOW BELOW 50/PPM',0
       
 CHICKEN1 DC.B 'WOW, JUST LIKE THAT YOU CHICKENED OUT'
          DC.B $0D,$0A
@@ -460,7 +473,7 @@ PLAY1    DC.B 'GLAD TO SEE YOUR UP TO THE TASK OF SAVING THE WORLD!'
          DC.B 'WINDMILLS COST 100 COINS AND REDUCE CARBON BY 50/PPM EVERY DAY',0
 PLAY2    DC.B $0D,$0A
          DC.B $0D,$0A
-         DC.B 'PRESS (1) TO START',0
+         DC.B 'PRESS (1) TO START ',0
 
 
 ERROR1  DC.B 'ERROR: INCORRECT NUMBER, PLEASE TRY AGAIN'
@@ -470,6 +483,10 @@ CON     DC.B $0D,$0A
         DC.B $0D,$0A
         DC.B 'PRESS (1) TO CONTINUE... ',0
         
+B1      DC.B 'YOU HAVE RUN OUT OF COINS :('
+        DC.B $0D,$0A
+        DC.B 'BETTER LUCK NEXT TIME',0
+        
 END:
     END    START        ; last line of source
 
@@ -478,9 +495,13 @@ END:
 *~Font size~10~
 *~Tab type~1~
 *~Tab size~4~
-© 2022 GitHub, Inc.
+? 2022 GitHub, Inc.
 
 
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
