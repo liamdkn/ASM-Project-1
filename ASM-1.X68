@@ -3,8 +3,8 @@
 * Written by : Liam Durkan C00264405
 * Date       : 19/1/2022
 * Description: A text based game.The goal is to reduce carbon levels below 50/ppm,
-                Players can do this by purchasing trees, solar and windmills. User has to choose the right 
-                amount of resourses to avoid spending all of budget.
+*                Players can do this by purchasing trees, solar and windmills. User has to choose the right 
+ *               amount of resourses to avoid spending all of budget.
 *-----------------------------------------------------------
     ORG    $1000
 START:                  ; first instruction of program
